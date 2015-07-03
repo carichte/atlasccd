@@ -2,6 +2,23 @@
 from setuptools import setup, find_packages
 import sys
 
+
+try:
+    import pyqtgraph
+except ImportError:
+    raise ImportError("Required package `pyqtgraph` not found. "
+                      "Please install it to proceed.")
+
+try:
+    import fabio
+except ImportError:
+    raise ImportError("Required package `fabio` not found. "
+                      "Please install it to proceed.")
+
+
+
+
+
 if len(sys.argv)<2:
     print("see install.txt for installation instructions.")
 

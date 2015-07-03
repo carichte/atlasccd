@@ -18,7 +18,11 @@ import numpy as np
 import pyqtgraph as pg
 import fabio
 
-import matplotlib.cm
+try:
+    import matplotlib.cm
+    hasmpl = True
+except ImportError:
+    hasmpl = False
 
 
 
@@ -70,10 +74,13 @@ class _ImageWindow(pg.ImageWindow):
     def set_cm(self, cmap):
         hw = self.getHistogramWidget()
         nativeCM = pg.graphicsItems.GradientEditorItem.Gradients.keys()
-        mplCM = [cm for cm in dir(matplotlib.cm) if not cm.startswith("_")]
+        if hasmpl:
+            mplCM = [cm for cm in dir(matplotlib.cm) if not cm.startswith("_")]
+        else:
+            mplCM = []
         if cmap in nativeCM:
             hw.item.gradient.loadPreset(cmap)
-        elif cmap in mplCM:
+        elif hasmpl and cmap in mplCM:
             ticks =  [(i, (map(lambda j: int(j*255), getattr(matplotlib.cm, cmap)(i)))) for i in np.linspace(0,1,11)]
             gradient = dict(ticks=ticks, mode="rgb")
             hw.item.gradient.restoreState(gradient)
