@@ -31,5 +31,6 @@ if __name__ == "__main__":
     else:
         data = atlasccd.open_img_stack(args.imgfile)
         iw = atlasccd.show_img(data)
+        iw.labels = args.imgfile
     
     QtGui.QApplication.instance().exec_()
