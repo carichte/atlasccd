@@ -9,6 +9,7 @@
 # Copyright (c) 2015 Carsten Richter  All rights reserved.
 #----------------------------------------------------------------------
 import os
+import io
 import sys
 import time
 import glob
@@ -27,26 +28,24 @@ except ImportError:
 
 
 
-def open_img(fpath, tmpfile = "/tmp/atlasccd.img"):
+def open_img(fpath):
     """
         Tiny wrapper around fabio to open a compressed atlas ccd .img file.
         Header and footer due to copying with netcat is removed.
         
         Returns: an fabio.OXDimage.OXDimage instance
     """
+    im = fabio.OXDimage.OXDimage()
+    
     with open(fpath, "r") as fh:
         s = fh.read(10)
         if s=="get(DATA):":
-            s = fh.read(72) # discard header
-            s = fh.read(-8)
+            fh2 = io.BytesIO()
+            fh.seek(82)
+            fh2.write(fh.read()[:-8])
+            im.read(fh2)
         else:
-            s = None
-    if s != None:
-        with open(tmpfile, "w") as fh:
-            fh.write(s)
-        fpath = tmpfile
-    
-    im = fabio.open(fpath)
+            im.read(fh)
     return im
 
 
